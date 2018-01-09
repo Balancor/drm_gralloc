@@ -65,6 +65,7 @@ init_drv_from_fd(int fd)
 		ALOGE("invalid DRM fd");
 		return NULL;
 	}
+    ALOGD("DRM Version: %s", version->name);
 
 	if (version->name) {
 #ifdef ENABLE_PIPE
@@ -72,8 +73,12 @@ init_drv_from_fd(int fd)
 #endif
 
 #ifdef ENABLE_INTEL
-		if (!drv && !strcmp(version->name, "i915"))
+		if (!drv && !strcmp(version->name, "i915")){
 			drv = gralloc_drm_drv_create_for_intel(fd);
+            if(!drv) {
+                ALOGE("gralloc_drm_drv_create_for_intel faild, errno: %d", errno);
+            }
+        }
 #endif
 #ifdef ENABLE_RADEON
 		if (!drv && !strcmp(version->name, "radeon"))
